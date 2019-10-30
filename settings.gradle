@@ -1,0 +1,2 @@
+include ':app', ':privacytel'
+rootProject.name='TestPrivacytel'

@@ -1,0 +1,61 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+version = "1.0.0"
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion "29.0.0"
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+}
+
+task makeJar(type:Copy){
+    delete 'build/libs/privacytel.jar'
+    from('build/intermediates/packaged-classes/release/')
+    into('build/libs/')
+    include('classes.jar')
+    rename('classes.jar','privacytel.jar')
+    //去掉不需要打包的目录和文件
+    exclude('test/','BuildConfig.class', 'R.class')
+    //去掉R$开头的文件
+    exclude { it.name.startsWith('R$'); }
+}
+
+makeJar.dependsOn(build)
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    //Retrofit
+    api "com.squareup.okhttp3:okhttp:3.12.0"
+    api "com.squareup.okhttp3:logging-interceptor:3.12.0"
+    api "com.squareup.retrofit2:retrofit:2.5.0"
+    api "com.squareup.retrofit2:converter-gson:2.5.0"
+    api "com.squareup.retrofit2:adapter-rxjava2:2.5.0"
+    api "io.reactivex.rxjava2:rxandroid:2.1.1"
+}
